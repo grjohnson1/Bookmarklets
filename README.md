@@ -8,8 +8,21 @@ Extract information locally as the Job Posting often expires overtime. Capturing
 
 1. Create a .TXT file to be stored locally.
     - filename format: YYYYMMDD - Company Name__Job_Title.txt
-    - example: 20260304 - S&P Global__Engineering.txt
+        - example: 20260304 - S&P Global -- Senior Engineer.txt
         - YYYYMMDD is the current date
+    - TXT file will include the following:
+    ```
+    Company Name
+
+    Job Title/Position
+    Location
+    Pay: (attempt to extract pay if found; tricky if company doesn't provide)
+
+    URL
+
+    [full description...]
+    ```
+
 2. Extract information into Google Sheets to help track Application submission and Response information
 
 ## Notes
@@ -23,6 +36,17 @@ This is an ongoing development where more will be added as time goes on. Come ba
 1. Before you get started go to your Bookmark Manager.
 2. Create a new folder with the name Bookmarklets.
 3. Add a new bookmark to reside in this folder for each of the following:
+
+<hr style="border:2px solid gray"> </hr>
+
+### Workday Job Posting
+Say you found a job you're interested in applying to that is on a Lever site.
+URL example: https://company_name.wd3.myworkdayjobs.com/
+
+1. Go to Workday_Job_Posting.js and copy the code.
+2. Create a bookmark with this code as the URL.
+3. Give it the name "Workday Job Posting".
+4. While on the Job Posting page in the browser of your choice click on the bookmarklet.
 
 <hr style="border:2px solid gray"> </hr>
 
