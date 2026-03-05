@@ -20,18 +20,41 @@ Please use with caution as I am running through many use cases but there may be 
 This is an ongoing development where more will be added as time goes on. Come back soon.
 
 ## Bookmarklet List
-1. Before you get started go to you Bookmark Manager.
+1. Before you get started go to your Bookmark Manager.
 2. Create a new folder with the name Bookmarklets.
 3. Add a new bookmark to reside in this folder for each of the following:
 
 <hr style="border:2px solid gray"> </hr>
 
 ### Greenhouse Job Posting
-Say you found a job your interested in applying to that is on a Greenhouse site.
+Say you found a job you're interested in applying to that is on a Greenhouse site.
+URL example: https://job-boards.greenhouse.io/company_name/
 
 1. Go to Greenhouse_Job_Posting.js and copy the code.
 2. Create a bookmark with this code as the URL.
 3. Give it the name "Greenhouse Job Posting".
-4. While on the Job Posting page in browser of your choice click on the bookmarklet.
+4. While on the Job Posting page in the browser of your choice click on the bookmarklet.
+
+<hr style="border:2px solid gray"> </hr>
+
+### Lever Job Posting
+Say you found a job you're interested in applying to that is on a Lever site.
+URL example: https://jobs.level.co/company_name/
+
+1. Go to Lever_Job_Posting.js and copy the code.
+2. Create a bookmark with this code as the URL.
+3. Give it the name "Lever Job Posting".
+4. While on the Job Posting page in the browser of your choice click on the bookmarklet.
+
+<hr style="border:2px solid gray"> </hr>
+
+### Asyby Job Posting
+Say you found a job you're interested in applying to that is on a Lever site.
+URL example: https://jobs.ashbyhq.com/company_name/
+
+1. Go to Asyby_Job_Posting.js and copy the code.
+2. Create a bookmark with this code as the URL.
+3. Give it the name "Asyby Job Posting".
+4. While on the Job Posting page in the browser of your choice click on the bookmarklet.
 
 <hr style="border:2px solid gray"> </hr>
