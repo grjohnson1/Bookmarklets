@@ -24,6 +24,8 @@ This is an ongoing development where more will be added as time goes on. Come ba
 2. Create a new folder with the name Bookmarklets.
 3. Add a new bookmark to reside in this folder for each of the following:
 
+<hr style="border:2px solid gray"> </hr>
+
 ### Greenhouse Job Posting
 Say you found a job your interested in applying to that is on a Greenhouse site.
 
@@ -31,7 +33,5 @@ Say you found a job your interested in applying to that is on a Greenhouse site.
 2. Create a bookmark with this code as the URL.
 3. Give it the name "Greenhouse Job Posting".
 4. While on the Job Posting page in browser of your choice click on the bookmarklet.
-
-
 
 <hr style="border:2px solid gray"> </hr>
