@@ -13,4 +13,25 @@ Extract information locally as the Job Posting often expires overtime. Capturing
 2. Extract information into Google Sheets to help track Application submission and Response information
 
 ## Notes
+Bookmarklets are saved as .JS files which will not run correctly as a bookmarklet is wrapped in a "javascript:()" function. 
+
 Please use with caution as I am running through many use cases but there may be items that haven't been played out. Attempting for speed.
+
+This is an ongoing development where more will be added as time goes on. Come back soon.
+
+## Bookmarklet List
+1. Before you get started go to you Bookmark Manager.
+2. Create a new folder with the name Bookmarklets.
+3. Add a new bookmark to reside in this folder for each of the following:
+
+### Greenhouse Job Posting
+Say you found a job your interested in applying to that is on a Greenhouse site.
+
+1. Go to Greenhouse_Job_Posting.js and copy the code.
+2. Create a bookmark with this code as the URL.
+3. Give it the name "Greenhouse Job Posting".
+4. While on the Job Posting page in browser of your choice click on the bookmarklet.
+
+
+
+<hr style="border:2px solid gray"> </hr>
