@@ -1,105 +1,334 @@
 javascript:(function(){
 
-function clean(str){
-  return str.trim().replace(/\//g,"").replace(/\s+/g," ");
-}
+    function clean(str){
+        return str.trim()
+            .replace(/[<>:"/\\|?*]/g,"")
+            .replace(/\s+/g," ");
+    }
 
-function capitalizeFirstLetterIfAlpha(str){
-  if (!str) return str;
-  return /^[a-zA-Z]/.test(str)
-    ? str.charAt(0).toUpperCase() + str.slice(1)
-    : str;
-}
+    function capitalizeFirstLetterIfAlpha(str){
+        if (!str) return str;
+        return /^[a-zA-Z]/.test(str)
+            ? str.charAt(0).toUpperCase() + str.slice(1)
+            : str;
+    }
 
-const url = window.location.href;
+    function getCompanyNameFromDomain(isSubdomain = true){
+        const orderNum = isSubdomain ? 0 : 1;
+        const hostname = window.location.hostname;
+        const match = hostname && hostname.indexOf(".") > -1 ? hostname.split(".")[orderNum] : "unknown";
+        return clean(match);
+    }
 
-function getCompanyNameBetweenUrl(){
-  const path = window.location.pathname;
-  const match = path.match(/^\/(.*?)\/jobs/);
-  return match && match[1] ? clean(match[1]) : "unknown";
-}
+    function getCompanyNameBetweenUrl(){
+        const path = window.location.pathname;
+        const match = path.match(/^\/(.*?)\/./);
+        return match && match[1] ? clean(match[1]) : "unknown";
+    }
 
-function getDate(){
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const dd = String(d.getDate()).padStart(2,"0");
-  return ""+yyyy+mm+dd;
-}
+    function extractPayLine(text){
+        if(!text) return "???";
 
-function getText(selector){
-  const el = document.querySelector(selector);
-  return el ? el.innerText.trim() : "";
-}
+        /*
+            Captures patterns like:
+                $85,000 - $105,000
+                $85,000–$105,000
+                $155,000 and $233,000
+                $80k to $120k
+                $32.50 - $45.25
+            Note that it will take the first match in the description, so if there are multiple pay lines, it may not capture the one you want.
+        */
+        const rangeRegex = /(\$\s?\d[\d,]*(?:\.\d+)?\s?(?:k|K)?)[\s]*(?:-|–|and|to)[\s]*(\$\s?\d[\d,]*(?:\.\d+)?\s?(?:k|K)?)/i;
+        const rangeMatch = text.match(rangeRegex);
 
-function extractPayLine(text){
-  if(!text) return "???";
+        if(rangeMatch){
+            return rangeMatch[1].trim() + " to " + rangeMatch[2].trim();
+        }
 
-  const rangeRegex = /\$\s?\d[\d,]*(?:\.\d+)?\s?(?:k|K)?\s?[-–]\s?\$\s?\d[\d,]*(?:\.\d+)?\s?(?:k|K)?/;
-  const rangeMatch = text.match(rangeRegex);
+        const singleDollarRegex = /\$\s?\d[\d,]*(?:\.\d+)?\s?(?:k|K)?/;
+        const singleMatch = text.match(singleDollarRegex);
 
-  if(rangeMatch){
-    return rangeMatch[0].replace(/\s+/g,"");
-  }
+        if(singleMatch){
+            return singleMatch[0];
+        }
 
-  const singleDollarRegex = /\$\s?\d[\d,]*(?:\.\d+)?\s?(?:k|K)?/;
-  const singleMatch = text.match(singleDollarRegex);
+        return "???";
+    }
 
-  if(singleMatch){
-    return singleMatch[0].replace(/\s+/g,"");
-  }
+    function getUniqueData() {
+        const domainName = window.location.hostname;
 
-  return "???";
-}
+        switch(domainName){
+            case "jobs.ashbyhq.com":
+                return getAsybyJobData();  
+            case "boards.greenhouse.io":
+            case "job-boards.greenhouse.io":
+                return getGreenhouseJobData();
+            case "jobs.lever.co":
+                return getLeverJobData();
+            default: {
+                /* ashby does allow for self hosted versions which have the domain of the company as well; need to look for "ashby_jid" in url path */
+                if(domainName.includes("myworkdayjobs")) {
+                    return getWorkdayJobData();  
+                }
 
-const companyName = capitalizeFirstLetterIfAlpha(getCompanyNameBetweenUrl());
-const h1 = document.querySelector("h1");
-const jobTitle = h1 ? clean(h1.innerText) : "no_title";
-const jobTitleText = h1 ? h1.innerText.trim() : "no_title";
+                if(window.location.search.includes("ashby_jid")) {
+                    return getPortedAsybyJobData();
+                }
 
-const today = getDate();
+                return getDefaultJobData();
+            }
+        }
+    }
 
-const baseFilename = today+" - "+companyName+" -- "+jobTitle;
+    function getAsybyJobData() {
+        console.log("Detected Ashby job board");
+        const companyName = decodeURIComponent(getCompanyNameBetweenUrl())
+            .split(" ")
+            .map(capitalizeFirstLetterIfAlpha)
+            .join(" ");
+        const h2Tag = document.querySelector('h2');
+        const locationElement = h2Tag ? h2Tag.nextElementSibling : null;
+        const location = locationElement ? locationElement.innerText.trim() : "";
+        const description = getText("div#overview");
+        const titleElement = document.querySelector("h1");
 
-const location = getText("div.job__location");
-const description = getText("div.job__description");
-const pay = extractPayLine(description);
+        return {
+            companyName,
+            location,
+            description,
+            titleElement
+        }
+    }
 
-const txtContent = [
-  companyName,
-  "",
-  jobTitleText,
-  location,
-  "Pay: "+pay,
-  "",
-  url,
-  "",
-  description
-].join("\n");
+    function getPortedAsybyJobData() {
+        console.log("Detected Ported Ashby job board");
+        const iframe = document.querySelector('iframe[src*="ashby"]');
+        if (iframe) {
+            alert("Found Ashby iframe, if attempt to process fails then try the following: right-click and view source. Search for iframe and right-click the src value to open the iframe content in a new tab and retry bookmarklet.");
+        }
+        const companyName = decodeURIComponent(getCompanyNameFromDomain(false))
+            .split(" ")
+            .map(capitalizeFirstLetterIfAlpha)
+            .join(" ");
+        const locationElement = document.querySelector('div.entry__job-header-location');
+        const location = locationElement ? locationElement.innerText.trim() : "";
+        const description = getText("div.entry-content");
+        const titleElement = document.querySelector("h1");
 
-const csvContent = [
-  companyName,
-  jobTitleText,
-  url,
-  location,
-  "",
-  "",
-  pay,
-  today
-].join(",");
+        return {
+            companyName,
+            location,
+            description,
+            titleElement
+        }
+    }
 
-function downloadFile(content, filename, type){
-  const blob = new Blob([content], {type});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(a.href);
-}
+    function getGreenhouseJobData() {
+        console.log("Detected Greenhouse job board");
+        const companyName = decodeURIComponent(getCompanyNameBetweenUrl())
+            .split(" ")
+            .map(capitalizeFirstLetterIfAlpha)
+            .join(" ");
+        const titleElement = document.querySelector("h1");
+        const locationElement = document.querySelector("div.job__location");
+        const location = locationElement ? locationElement.innerText.trim() : "";
+        const description = getText("div.job__description");
 
-downloadFile(txtContent, baseFilename+".txt", "text/plain");
-downloadFile(csvContent, baseFilename+".csv", "text/csv");
+        return {
+            companyName,
+            location,
+            description,
+            titleElement
+        }
+    }
 
+    function getLeverJobData() {
+        console.log("Detected Lever job board");
+        const companyName = decodeURIComponent(getCompanyNameBetweenUrl())
+            .split(" ")
+            .map(capitalizeFirstLetterIfAlpha)
+            .join(" ");
+        const titleElement = document.querySelector("h2");
+        const locationElement = document.querySelector("div.location");
+        const location = locationElement ? locationElement.innerText.trim() : "";
+        const description = getText('div[data-qa="job-description"]');
+
+        return {
+            companyName,
+            location,
+            description,
+            titleElement
+        }
+    }
+
+    function getWorkdayJobData() {
+        console.log("Detected Workday job board");
+        const companyName = decodeURIComponent(getCompanyNameFromDomain())
+            .split(" ")
+            .map(capitalizeFirstLetterIfAlpha)
+            .join(" ");
+        const titleElement = document.querySelector("h2");
+        const locationElement = document.querySelector('div[data-automation-id="locations"] dd');
+        const location = locationElement ? locationElement.innerText.trim() : "";
+        const description = getText('div[data-automation-id="jobPostingDescription"]');
+
+        return {
+            companyName,
+            location,
+            description,
+            titleElement
+        }
+    }
+
+    function getDefaultJobData() {
+        alert("Unable to process this job board at this time. Contact the developer and pass the URL so that we can add support for this job board!");
+    }
+    /* Content after this does not change depending on Job Posting Company */
+    function getCommonData() {
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const dd = String(d.getDate()).padStart(2,"0");
+
+        return {
+            url: window.location.href,
+            fileDate: ""+yyyy+mm+dd,
+            csvDate: ""+mm+"/"+dd+"/"+yyyy
+        };
+    }
+
+    function getText(selector){
+        const el = document.querySelector(selector);
+        return el ? el.innerText.trim() : "";
+    }
+
+    function csvEscape(value){
+        return `"${String(value).replace(/"/g,'""')}"`;
+    }
+
+    function downloadFile(content, filename, type){
+        const blob = new Blob([content], {type});
+        const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+    }
+
+    async function copyText(text) {
+        if (navigator.clipboard) {
+            await navigator.clipboard.writeText(text)
+                .then(()=>alert("Copied ✓"))
+                .catch((err) => { console.error('Clipboard write failed: ', err); });
+        } else {
+            /* Fallback for older browsers or HTTP */
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+        }
+    }
+
+    function showCSVPopup(csv) {
+        const overlay = document.createElement("div");
+            overlay.style.position = "fixed";
+            overlay.style.top = "0";
+            overlay.style.left = "0";
+            overlay.style.width = "100%";
+            overlay.style.height = "100%";
+            overlay.style.background = "rgba(0,0,0,0.6)";
+            overlay.style.zIndex = "999999";
+            overlay.style.display = "flex";
+            overlay.style.alignItems = "center";
+            overlay.style.justifyContent = "center";
+            overlay.style.backdropFilter = "blur(2px)";
+
+        const panel = document.createElement("div");
+            panel.style.background = "#fff";
+            panel.style.padding = "20px";
+            panel.style.borderRadius = "8px";
+            panel.style.width = "600px";
+            panel.style.boxShadow = "0 0 20px rgba(0,0,0,0.4)";
+            panel.style.fontFamily = "monospace";
+
+        const textarea = document.createElement("textarea");
+            textarea.value = csv;
+            textarea.style.width = "100%";
+            textarea.style.height = "80px";
+            textarea.style.marginBottom = "10px";
+
+        const copyBtn = document.createElement("button");
+            copyBtn.innerText = "Copy CSV";
+            copyBtn.style.marginRight = "10px";
+
+        const closeBtn = document.createElement("button");
+            closeBtn.innerText = "Close";
+
+        copyBtn.onclick = function(){
+            textarea.select();
+            copyText(csv).catch(()=>{});
+            copyBtn.innerText = "Copied ✓";
+        };
+
+        closeBtn.onclick = function(){
+            document.body.removeChild(overlay);
+        };
+
+        panel.appendChild(textarea);
+        panel.appendChild(copyBtn);
+        panel.appendChild(closeBtn);
+        overlay.appendChild(panel);
+
+        document.body.appendChild(overlay);
+
+        textarea.select();
+    }
+
+    function processJobPosting() {
+        const uniqueData = getUniqueData();
+        /*console.log("Unique Data:", uniqueData);*/
+        const commonData = getCommonData();
+        /*console.log("Common Data:", commonData);*/
+
+        const jobTitleFileNameVersion = uniqueData.titleElement ? clean(uniqueData.titleElement.innerText) : "no_job_title";
+        const jobTitle = uniqueData.titleElement ? uniqueData.titleElement.innerText.trim() : "no_job_title";
+        const pay = extractPayLine(uniqueData.description);
+
+        const txtContent = [
+            uniqueData.companyName,
+            "",
+            jobTitle,
+            uniqueData.location,
+            "Pay: "+pay,
+            "",
+            commonData.url,
+            "",
+            uniqueData.description
+        ].join("\n");
+
+        const csvContent = [
+            uniqueData.companyName,
+            jobTitle,
+            commonData.url,
+            uniqueData.location,
+            "",
+            "",
+            pay,
+            commonData.csvDate,
+            "Open"
+        ].map(csvEscape).join(",");
+
+        const baseFilename = commonData.fileDate+" - "+uniqueData.companyName+" -- "+jobTitleFileNameVersion;
+
+        downloadFile(txtContent, baseFilename+".txt", "text/plain");
+        showCSVPopup(csvContent);
+    }
+
+    processJobPosting();
 })();
