@@ -93,6 +93,16 @@ const csvContent = [
 So you would just need to move up jobTitle above uniqueData.companyName if you want the columns to be "Job Title","Company Name". Be sure to collapse to a single line to place as your bookmarklet.
 <hr style="border:2px solid gray"> </hr>
 
+## How to collapse code in a single line
+In VS Code you can collapse code to a single line by following the steps below:
+1. Open file in VS Code.
+2. CTRL + A => Selects all content.
+3. CTRL + SHIFT + P => Opens Command Palette.
+4. Select "Join Lines" => Collapse the code to a single line.
+5. Now the bookmarklet is on a single line, allowing for easier usage.
+
+<hr style="border:2px solid gray"> </hr>
+
 ## Bookmarklet List
 Other potential Bookmarklets based on my single job posting tests are below:
 
