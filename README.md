@@ -45,6 +45,7 @@ Gregg
     - Type and Mode are drop-down.
     - Sent is date you applied which is the date of capture for the bookmarklet.
     - Responce is to track Company responses. Initially it is set to "Open".
+
 | Company| Position | Link | Location | Type | Mode | Pay (range) | Sent | Response |
 |---|---|---|---|---|---|---|---|---|
 
