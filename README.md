@@ -42,11 +42,11 @@ Gregg
     "Company Name","Job Title","Job_Posting_URL","location[s]","","","Pay","Applied_Date","Open"
     ```
     - Note that the layout suits my Google Sheet layout and may not match your needs.
-    ```
-    Company	Position	Link	Location	Type	Mode	Pay (range)	Sent	Response
-    ```
-    - Type and Mode are drop-down
+    - Type and Mode are drop-down.
+    - Sent is date you applied which is the date of capture for the bookmarklet.
     - Responce is to track Company responses. Initially it is set to "Open".
+| Company| Position | Link | Location | Type | Mode | Pay (range) | Sent | Response |
+|---|---|---|---|---|---|---|---|---|
 
 3. Output Notes:
     - The Pay will capture patterns similar to the following and converts it to "$# to $#". It takes first match in the full description, so if there are multiple pay lines as some do with Zone A, B, C, it may not capture the one you want. So change accordingly.
