@@ -61,9 +61,9 @@ Gregg
     $32.50 - $45.25
     ```
     - Apply existing formatting with the "Paint format" tool in Google Sheets:
-    1. Select an existing row in your Google Sheet that has the formatting and alignment you want to replicate.
-    2. Click the "Paint format" (paint roller icon) in the toolbar (next to the print icon).
-    3. Click the first cell of the newly pasted row (the one you just pasted as "values only"). This will instantly apply the selected row's formatting (colors, borders, alignment, fonts, etc.) to the new data.
+        1. Select an existing row in your Google Sheet that has the formatting and alignment you want to replicate.
+        2. Click the "Paint format" (paint roller icon) in the toolbar (next to the print icon).
+        3. Click the first cell of the newly pasted row (the one you just pasted as "values only"). This will instantly apply the selected row's formatting (colors, borders, alignment, fonts, etc.) to the new data.
 <hr style="border:2px solid gray"> </hr>
 
 ## Create Bookmarklet folder
